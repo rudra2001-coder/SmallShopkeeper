@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +22,11 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val products by viewModel.products.collectAsState()
+    val sales by viewModel.sales.collectAsState()
+    val activities by viewModel.activities.collectAsState()
+
+    val totalSales = sales.sumOf { it.totalAmount }
+    val totalProfit = sales.sumOf { it.profit }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Dashboard", style = MaterialTheme.typography.headlineMedium)
@@ -31,8 +38,8 @@ fun DashboardScreen(
                 Text("Quick Stats", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Total Products: ${products.size}")
-                Text("Total Sales: ...")
-                Text("Total Profit: ...")
+                Text("Total Sales: $${String.format("%.2f", totalSales)}")
+                Text("Total Profit: $${String.format("%.2f", totalProfit)}")
             }
         }
 
@@ -43,9 +50,11 @@ fun DashboardScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Recent Activities", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Sale #123 - $50.00")
-                Text("New Product Added: ...")
-                Text("Expense: Rent - $500.00")
+                LazyColumn {
+                    items(activities) { activity ->
+                        Text(text = "${activity.type}: ${activity.description} - $${activity.amount}")
+                    }
+                }
             }
         }
     }

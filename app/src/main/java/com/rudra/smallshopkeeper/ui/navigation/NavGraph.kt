@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rudra.smallshopkeeper.ui.dashboard.DashboardScreen
 import com.rudra.smallshopkeeper.ui.expenses.ExpensesScreen
+import com.rudra.smallshopkeeper.ui.products.AddProductScreen
 import com.rudra.smallshopkeeper.ui.products.ProductsScreen
 import com.rudra.smallshopkeeper.ui.reports.ReportsScreen
 import com.rudra.smallshopkeeper.ui.sales.SalesScreen
@@ -38,16 +39,10 @@ fun NavGraph() {
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
                                 launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
                         }
@@ -65,7 +60,10 @@ fun NavGraph() {
                 DashboardScreen()
             }
             composable(Screen.Products.route) {
-                ProductsScreen()
+                ProductsScreen(navController = navController)
+            }
+            composable(Screen.AddProduct.route) {
+                AddProductScreen(navController = navController)
             }
             composable(Screen.Sales.route) {
                 SalesScreen()
